@@ -1,5 +1,5 @@
 {
-  "name": "backend_port",
+  "name": "portfolio_dashboard",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -19,11 +19,15 @@
     "cloudinary": "^2.2.0",
     "cloudinary-react": "^1.8.1",
     "faker": "5.5.3",
+    "lottie-web": "^5.12.2",
+    "lucide": "^0.468.0",
+    "lucide-react": "^0.468.0",
     "mongodb": "^6.5.0",
     "mongoose": "^8.3.0",
     "multiparty": "^4.2.3",
     "next": "14.1.4",
     "next-auth": "^4.24.7",
+    "next-transpile-modules": "^10.0.1",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
