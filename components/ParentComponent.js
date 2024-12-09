@@ -1,11 +1,11 @@
 import Aside from "./Aside";
 import Header from "./Header";
 
-function ParentComponent(props) {
+function ParentComponent({ appOpen, appAsideOpen }) {
   return (
     <div>
-      <Header />
-      <Aside />
+      <Header asideOpen={appOpen} handleAsideOpen={appAsideOpen} />
+      <Aside asideOpen={appOpen} handleAsideOpen={appAsideOpen} />
     </div>
   );
 }

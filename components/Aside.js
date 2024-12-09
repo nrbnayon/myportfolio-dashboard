@@ -1,85 +1,148 @@
-import React, { useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Home,
-  BarChart2,
-  Users,
-  Settings,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Contact, Home, Images, Settings } from "lucide-react";
+import { FaBlog, FaTasks, FaShoppingCart } from "react-icons/fa";
+import { useRouter } from "next/router";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function Sidebar() {
-  const [isExpanded, setIsExpanded] = useState(true);
+const MenuItem = ({
+  title,
+  icon: Icon,
+  link,
+  subLinks,
+  activeLink,
+  handleLinkClick,
+}) => {
+  const isActive = activeLink === link;
 
-  const sidebarItems = [
-    { icon: Home, label: "Home", href: "/" },
-    { icon: BarChart2, label: "Analytics", href: "/analytics" },
-    { icon: Users, label: "Users", href: "/users" },
-    { icon: Settings, label: "Settings", href: "/settings" },
+  return (
+    <li
+      className={
+        isActive
+          ? "navactive flex-col flex-left"
+          : "navdefault flex-col flex-left"
+      }
+    >
+      <div
+        className='flex gap-1 menu-item-header'
+        onClick={() => handleLinkClick(link)}
+      >
+        <Icon className='menu-icon' />
+        <span>{title}</span>
+      </div>
+      <AnimatePresence>
+        {isActive && subLinks && (
+          <motion.ul
+            className='submenu'
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {subLinks.map((sub, idx) => (
+              <Link key={idx} href={sub.path} passHref>
+                <motion.li
+                  className='submenu-item'
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {sub.label}
+                </motion.li>
+              </Link>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </li>
+  );
+};
+
+export default function Aside({ asideOpen, handleAsideOpen }) {
+  const router = useRouter();
+  const [activeLink, setActiveLink] = useState("/");
+
+  const handleLinkClick = (link) => {
+    if (link) {
+      setActiveLink((prev) => (prev === link ? null : link));
+      router.push(link); // Ensure navigation to the link
+    }
+  };
+
+  useEffect(() => {
+    setActiveLink(router.pathname);
+  }, [router.pathname]);
+
+  const menuItems = [
+    {
+      title: "Dashboard",
+      icon: Home,
+      link: "/",
+    },
+    {
+      title: "Blogs",
+      icon: FaBlog,
+      link: "/blogs",
+      subLinks: [
+        { label: "All Blogs", path: "/blogs/all" },
+        { label: "Draft Blogs", path: "/blogs/drafts" },
+        { label: "Add Blog", path: "/blogs/addblog" },
+      ],
+    },
+    {
+      title: "Projects",
+      icon: FaTasks,
+      link: "/projects",
+      subLinks: [
+        { label: "All Projects", path: "/projects/all" },
+        { label: "Draft Projects", path: "/projects/drafts" },
+        { label: "Add Project", path: "/projects/add" },
+      ],
+    },
+    {
+      title: "Shops",
+      icon: FaShoppingCart,
+      link: "/shops",
+      subLinks: [
+        { label: "All Shops", path: "/shops/all" },
+        { label: "Draft Shops", path: "/shops/drafts" },
+        { label: "Add Shop", path: "/shops/add" },
+      ],
+    },
+    {
+      title: "Gallery",
+      icon: Images,
+      link: "/gallery",
+      subLinks: [
+        { label: "All Photos", path: "/gallery/all" },
+        { label: "Add Photo", path: "/gallery/add" },
+      ],
+    },
+    {
+      title: "Contacts",
+      icon: Contact,
+      link: "/contact",
+    },
+    {
+      title: "Settings",
+      icon: Settings,
+      link: "/settings",
+    },
   ];
 
   return (
-    <aside
-      className={` asideleft active
-        fixed left-0 top-0 h-screen bg-gray-800 text-white 
-        transition-all duration-300 ease-in-out
-        ${isExpanded ? "w-64" : "w-20"}
-        flex flex-col
-      `}
-    >
-      {/* Sidebar Toggle Button */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className='absolute top-4 -right-4 bg-gray-700 p-1 rounded-full shadow-lg z-10'
-      >
-        {isExpanded ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
-      </button>
-
-      {/* Logo Area */}
-      <div className='flex items-center p-4 border-b border-gray-700'>
-        <img
-          src='/api/placeholder/50/50'
-          alt='Logo'
-          className='w-10 h-10 rounded-full mr-3'
-        />
-        {isExpanded && <span className='font-bold text-xl'>Dashboard</span>}
-      </div>
-
-      {/* Navigation Items */}
-      <nav className='flex-grow mt-8'>
-        <ul>
-          {sidebarItems.map((item, index) => (
-            <li key={index}>
-              <Link
-                href={item.href}
-                className={`
-                  flex items-center p-4 hover:bg-gray-700 
-                  transition-colors duration-200
-                  ${isExpanded ? "justify-start" : "justify-center"}
-                `}
-              >
-                <item.icon className='mr-3' size={24} />
-                {isExpanded && <span>{item.label}</span>}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* Bottom Section */}
-      <div className='p-4 border-t border-gray-700'>
-        <button
-          className={`
-            flex items-center text-red-400 hover:text-red-300
-            ${isExpanded ? "justify-start" : "justify-center"}
-          `}
-        >
-          <LogOut className='mr-3' size={24} />
-          {isExpanded && <span>Logout</span>}
-        </button>
-      </div>
+    <aside className={asideOpen ? "asideleft active" : "asideleft"}>
+      <ul>
+        {menuItems.map((item, idx) => (
+          <MenuItem
+            key={idx}
+            {...item}
+            activeLink={activeLink}
+            handleLinkClick={handleLinkClick}
+          />
+        ))}
+      </ul>
+      <button className='logoutbtn'>Logout</button>
     </aside>
   );
 }
