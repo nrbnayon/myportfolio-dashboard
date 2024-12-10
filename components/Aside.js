@@ -1,11 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Contact, Home, Images, Settings } from "lucide-react";
-import { FaBlog, FaTasks, FaShoppingCart } from "react-icons/fa";
+import {
+  Contact,
+  Home,
+  Images,
+  Settings,
+  BriefcaseBusiness,
+} from "lucide-react";
+import { FaTasks } from "react-icons/fa";
+import { MdAddShoppingCart } from "react-icons/md";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { BsPostcard } from "react-icons/bs";
 const MenuItem = ({
   title,
   icon: Icon,
@@ -58,7 +65,7 @@ const MenuItem = ({
   );
 };
 
-export default function Aside({ asideOpen, handleAsideOpen }) {
+export default function Aside({ asideOpen }) {
   const router = useRouter();
   const [activeLink, setActiveLink] = useState("/");
 
@@ -81,7 +88,7 @@ export default function Aside({ asideOpen, handleAsideOpen }) {
     },
     {
       title: "Blogs",
-      icon: FaBlog,
+      icon: BsPostcard,
       link: "/blogs",
       subLinks: [
         { label: "All Blogs", path: "/blogs/all" },
@@ -91,7 +98,7 @@ export default function Aside({ asideOpen, handleAsideOpen }) {
     },
     {
       title: "Projects",
-      icon: FaTasks,
+      icon: BriefcaseBusiness,
       link: "/projects",
       subLinks: [
         { label: "All Projects", path: "/projects/all" },
@@ -101,7 +108,7 @@ export default function Aside({ asideOpen, handleAsideOpen }) {
     },
     {
       title: "Shops",
-      icon: FaShoppingCart,
+      icon: MdAddShoppingCart,
       link: "/shops",
       subLinks: [
         { label: "All Shops", path: "/shops/all" },

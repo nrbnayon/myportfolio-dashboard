@@ -4,7 +4,7 @@ import "@/styles/globals.css";
 import { useState } from "react";
 
 export default function App({ Component, pageProps }) {
-  const [asideOpen, setAsideOpen] = useState(false);
+  const [asideOpen, setAsideOpen] = useState(true);
 
   const AsideClickOpen = () => {
     setAsideOpen(!asideOpen);
