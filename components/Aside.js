@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -8,77 +9,75 @@ import {
   Settings,
   BriefcaseBusiness,
 } from "lucide-react";
-import { FaTasks } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
-import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { BsPostcard } from "react-icons/bs";
-const MenuItem = ({
-  title,
-  icon: Icon,
-  link,
-  subLinks,
-  activeLink,
-  handleLinkClick,
-}) => {
-  const isActive = activeLink === link;
+import { useRouter, usePathname } from "next/navigation";
 
-  return (
-    <li
-      className={
-        isActive
-          ? "navactive flex-col flex-left"
-          : "navdefault flex-col flex-left"
-      }
-    >
-      <div
-        className='flex gap-1 menu-item-header'
-        onClick={() => handleLinkClick(link)}
+const MenuItem = React.memo(
+  ({ title, icon: Icon, link, subLinks, activeLink, handleLinkClick }) => {
+    const isActive = activeLink === link;
+
+    return (
+      <li
+        className={
+          isActive
+            ? "navactive flex-col flex-left"
+            : "navdefault flex-col flex-left"
+        }
       >
-        <Icon className='menu-icon' />
-        <span>{title}</span>
-      </div>
-      <AnimatePresence>
-        {isActive && subLinks && (
-          <motion.ul
-            className='submenu'
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {subLinks.map((sub, idx) => (
-              <Link key={idx} href={sub.path} passHref>
-                <motion.li
-                  className='submenu-item'
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {sub.label}
-                </motion.li>
-              </Link>
-            ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </li>
-  );
-};
+        <div
+          className='flex gap-1 menu-item-header'
+          onClick={() => handleLinkClick(link)}
+        >
+          <Icon className='menu-icon' />
+          <span>{title}</span>
+        </div>
+        <AnimatePresence>
+          {isActive && subLinks && (
+            <motion.ul
+              className='submenu'
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {subLinks.map((sub, idx) => (
+                <Link key={idx} href={sub.path} passHref>
+                  <motion.li
+                    className='submenu-item'
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {sub.label}
+                  </motion.li>
+                </Link>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
+      </li>
+    );
+  }
+);
+
+MenuItem.displayName = "MenuItem";
 
 export default function Aside({ asideOpen }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [activeLink, setActiveLink] = useState("/");
 
   const handleLinkClick = (link) => {
     if (link) {
       setActiveLink((prev) => (prev === link ? null : link));
-      router.push(link); // Ensure navigation to the link
+      router.push(link);
     }
   };
 
   useEffect(() => {
-    setActiveLink(router.pathname);
-  }, [router.pathname]);
+    setActiveLink(pathname);
+  }, [pathname]);
 
   const menuItems = [
     {

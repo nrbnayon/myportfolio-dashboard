@@ -6,8 +6,8 @@ import { useState } from "react";
 import Image from "next/image";
 
 // Import images
-import notificationImage from "/public/img/notification.png";
-import userImage from "/public/img/user.png";
+import notificationImage from "@/assets/img/notification.png";
+import userImage from "@/assets/img/user.png";
 import { IoMdClose } from "react-icons/io"; // Import close icon
 
 export default function Header({ handleAsideOpen, asideOpen }) {

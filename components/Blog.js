@@ -1,5 +1,7 @@
+"use client";
 import React, { useState } from "react";
 import { generateSlug } from "../utils/generateSlug";
+// import MarkdownEditor from "react-markdown-editor-lite";
 import Spinner from "./Spinner";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
@@ -7,7 +9,7 @@ import rehypeSanitize from "rehype-sanitize";
 export default function Blog() {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [content, setContent] = useState("");
+  const [value, setValue] = useState("");
 
   const handleTitleChange = (e) => {
     const newTitle = e.target.value;
@@ -90,6 +92,7 @@ export default function Blog() {
           Blog Content (for image: first upload and copy link and paste in ![alt
           text](link))
         </label>
+        {/* <MarkdownEditor /> */}
         <MDEditor
           value={value}
           onChange={setValue}
