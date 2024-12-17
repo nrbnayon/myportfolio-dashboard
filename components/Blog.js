@@ -21,7 +21,7 @@ export default function Blog() {
   };
 
   return (
-    <form className='addWebsiteform'>
+    <form className='addWebsiteform max-w-[85%]'>
       <div className='w-100 flex flex-col flex-left mb-2'>
         <label htmlFor='title'>Title</label>
         <input
@@ -63,6 +63,7 @@ export default function Blog() {
           <option value='typescript'>TypeScript</option>
           <option value='mongodb'>MongoDB</option>
           <option value='express'>Express.js</option>
+          <option value='database'>Database</option>
         </select>
       </div>
 
@@ -96,9 +97,11 @@ export default function Blog() {
         <MDEditor
           value={value}
           onChange={setValue}
+          style={{ width: "100%", height: "400px" }}
           previewOptions={{
             rehypePlugins: [[rehypeSanitize]],
           }}
+          className='border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
         />
       </div>
     </form>

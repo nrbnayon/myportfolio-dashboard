@@ -39,7 +39,7 @@ export default function Header({ handleAsideOpen, asideOpen }) {
     <>
       <header className='header flex flex-sb'>
         <div className='logo flex gap-2'>
-          <h1>ADMIN</h1>
+          <h1 className='text-2xl'>ADMIN</h1>
           <div className='headerham flex flex-center' onClick={handleAsideOpen}>
             {asideOpen ? <IoMdClose /> : <RiBarChartHorizontalLine />}
           </div>
