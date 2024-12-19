@@ -1,3 +1,5 @@
+// app/api/blogs/route.js
+
 import { mongooseConnect } from "@/lib/mongoose";
 import { Blog } from "@/models/Blog";
 
