@@ -1,3 +1,5 @@
+// models/Blog.js
+
 const { Schema, models, model } = require("mongoose");
 
 const BlogSchema = new Schema(
