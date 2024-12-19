@@ -208,11 +208,12 @@ export default function Blog() {
       // Prepare the post data
       const postData = {
         ...formData,
-        images: selectedFiles.length > 0 ? previews : [], // Replace with actual image URLs after upload
+        images: selectedFiles.length > 0 ? previews : [],
         createdAt: new Date().toISOString(),
       };
 
-      // TODO: Replace with your actual API endpoint
+      console.log("Submitting data:", postData); // Debug log
+
       const response = await fetch("/api/blogs", {
         method: "POST",
         headers: {
@@ -221,15 +222,17 @@ export default function Blog() {
         body: JSON.stringify(postData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to create post");
+        throw new Error(data.message || "Failed to create post");
       }
 
       // Handle successful submission
-      const data = await response.json();
-      router.push(`/blog/${data.slug}`); // Redirect to the new post
+      router.push(`/blog/${data.data.slug}`);
     } catch (error) {
       setError(error.message);
+      console.error("Submission error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -383,7 +386,7 @@ export default function Blog() {
         >
           <option value=''>No Select</option>
           <option value='draft'>Draft</option>
-          <option value='publish'>Publish</option>
+          <option value='published'>Publish</option>
         </select>
       </div>
 
