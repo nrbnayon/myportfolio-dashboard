@@ -1,14 +1,26 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, Suspense } from "react";
 import { generateSlug } from "../utils/generateSlug";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize from "rehype-sanitize";
-import MDEditor from "@uiw/react-md-editor";
+import dynamic from "next/dynamic";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-hot-toast";
+
+// Dynamic import of MDEditor
+const MDEditor = dynamic(
+  () => import("@uiw/react-md-editor").then((mod) => mod.default),
+  {
+    ssr: false,
+    loading: () => (
+      <div className='h-[400px] w-full border rounded-md bg-gray-50' />
+    ),
+  }
+);
 
 // Existing components remain unchanged
 const Spinner = () => (
@@ -99,6 +111,8 @@ const CustomMarkdownComponents = {
 
 export default function Blog() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const blogId = searchParams.get("id");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -116,6 +130,37 @@ export default function Blog() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Fetch blog data if blogId exists
+  useEffect(() => {
+    const fetchBlogData = async () => {
+      if (blogId) {
+        try {
+          const response = await fetch(`/api/blogs/${blogId}`);
+          if (!response.ok) throw new Error("Failed to fetch blog data");
+          const data = await response.json();
+
+          setFormData({
+            title: data.title,
+            slug: data.slug,
+            description: data.description,
+            category: data.category || [],
+            status: data.status,
+            tags: data.tags || [],
+          });
+
+          if (data.images && data.images.length > 0) {
+            setPreviews(data.images);
+          }
+        } catch (error) {
+          toast.error("Error fetching blog data");
+          console.error("Error fetching blog:", error);
+        }
+      }
+    };
+
+    fetchBlogData();
+  }, [blogId]);
 
   // Handle title change and generate slug
   const handleTitleChange = (e) => {
@@ -185,8 +230,9 @@ export default function Blog() {
       }
 
       const data = await response.json();
-      // Handle successful upload (e.g., save image URLs)
+      toast.success("Images uploaded successfully");
     } catch (error) {
+      toast.error("Error uploading images: " + error.message);
       setError("Error uploading images: " + error.message);
     } finally {
       setIsUploading(false);
@@ -212,10 +258,11 @@ export default function Blog() {
         createdAt: new Date().toISOString(),
       };
 
-      console.log("Submitting data:", postData); // Debug log
+      const url = blogId ? `/api/blogs/${blogId}` : "/api/blogs";
+      const method = blogId ? "PUT" : "POST";
 
-      const response = await fetch("/api/blogs", {
-        method: "POST",
+      const response = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -225,20 +272,24 @@ export default function Blog() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to create post");
+        throw new Error(data.message || "Failed to save blog");
       }
 
-      // Handle successful submission
+      // Show success message
+      toast.success(
+        blogId ? "Blog updated successfully!" : "Blog created successfully!"
+      );
+
+      // Redirect to blog page
       router.push(`/blog/${data.data.slug}`);
     } catch (error) {
+      toast.error(error.message);
       setError(error.message);
       console.error("Submission error:", error);
     } finally {
       setIsLoading(false);
     }
   };
-
-  console.log("first", formData);
 
   return (
     <form className='addWebsiteform max-w-[85%]' onSubmit={handleSubmit}>
@@ -338,20 +389,27 @@ export default function Blog() {
           Blog Content (for image: first upload and copy link and paste in ![alt
           text](link))
         </label>
-        <MDEditor
-          value={formData.description}
-          onChange={handleDescriptionChange}
-          height={400}
-          style={{ width: "100%" }}
-          previewOptions={{
-            components: CustomMarkdownComponents,
-            rehypePlugins: [rehypeSanitize, rehypeHighlight],
-          }}
-          textareaProps={{
-            placeholder: "Write your blog content here... (Supports Markdown)",
-            spellCheck: true,
-          }}
-        />
+        <Suspense
+          fallback={
+            <div className='h-[400px] w-full border rounded-md bg-gray-50' />
+          }
+        >
+          <MDEditor
+            value={formData.description}
+            onChange={handleDescriptionChange}
+            height={400}
+            style={{ width: "100%" }}
+            previewOptions={{
+              components: CustomMarkdownComponents,
+              rehypePlugins: [rehypeSanitize, rehypeHighlight],
+            }}
+            textareaProps={{
+              placeholder:
+                "Write your blog content here... (Supports Markdown)",
+              spellCheck: true,
+            }}
+          />
+        </Suspense>
       </div>
 
       <div className='w-100 flex flex-col flex-left mb-2'>
@@ -396,7 +454,7 @@ export default function Blog() {
           disabled={isLoading}
           className='addwebbtn hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
         >
-          {isLoading ? "SAVING..." : "SAVE BLOG"}
+          {isLoading ? "SAVING..." : blogId ? "UPDATE BLOG" : "SAVE BLOG"}
         </button>
       </div>
     </form>

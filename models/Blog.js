@@ -29,7 +29,7 @@ const blogSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ["draft", "published"], // Changed from 'publish' to 'published'
+        values: ["draft", "published"],
         message: "{VALUE} is not a valid status",
       },
       default: "draft",
@@ -38,6 +38,7 @@ const blogSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    // comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   },
   {
     timestamps: true,

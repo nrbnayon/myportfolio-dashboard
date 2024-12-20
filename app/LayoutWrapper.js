@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import Aside from "@/components/Aside";
+import { Toaster } from "react-hot-toast";
 
 export default function LayoutWrapper({ children }) {
   const [asideOpen, setAsideOpen] = useState(true);
@@ -18,6 +19,7 @@ export default function LayoutWrapper({ children }) {
       <div className={asideOpen ? "container" : "container active"}>
         {children}
       </div>
+      <Toaster position='top-right' />
     </>
   );
 }
